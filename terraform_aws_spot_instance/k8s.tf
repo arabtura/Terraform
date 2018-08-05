@@ -1,5 +1,5 @@
-variable "ssh_key_name" {default = "YOUR_KEY_NAME_HERE"}
-variable "aws_region_name" { default = "us-west-2" }
+variable "ssh_key_name" {default = "aws_starabur_key_file"}
+variable "aws_region_name" { default = "us-east-1" }
 
 provider "aws" {
   # Use keys in home dir.
@@ -37,7 +37,7 @@ resource "aws_spot_instance_request" "k8s-master" {
   count         = "1"
   ami           = "${data.aws_ami.ubuntu.id}"
   spot_price    = "0.01"
-  instance_type = "m3.medium"
+  instance_type = "t2.small"
   spot_type     = "one-time"
 
   vpc_security_group_ids = ["${aws_security_group.k8s_sg.id}"]
@@ -57,7 +57,7 @@ resource "aws_spot_instance_request" "k8s-worker" {
   count         = "2"
   ami           = "${data.aws_ami.ubuntu.id}"
   spot_price    = "0.01"
-  instance_type = "m3.medium"
+  instance_type = "t2.small"
   spot_type     = "one-time"
 
   vpc_security_group_ids = ["${aws_security_group.k8s_sg.id}"]
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "allow_all_egress" {
   to_port         = 0
   protocol        = "all"
   cidr_blocks     = ["0.0.0.0/0"]
-  description     = "Outbound access to ANY"
+  #description     = "Outbound access to ANY"
 
   security_group_id = "${aws_security_group.k8s_sg.id}"
 }
@@ -93,7 +93,7 @@ resource "aws_security_group_rule" "allow_all_myip" {
   to_port         = 0
   protocol        = "all"
   cidr_blocks     = ["${data.external.myipaddr.result["ip"]}/32"]
-  description     = "Management Ports for K8s Cluster"
+  #description     = "Management Ports for K8s Cluster"
 
   security_group_id = "${aws_security_group.k8s_sg.id}"
 }
@@ -104,7 +104,7 @@ resource "aws_security_group_rule" "allow_SG_any" {
   to_port         = 0
   protocol        = "all"
   self            = true
-  description     = "Any from SG for K8s Cluster"
+  #description     = "Any from SG for K8s Cluster"
 
   security_group_id = "${aws_security_group.k8s_sg.id}"
 }
@@ -113,5 +113,5 @@ output "master_ip" {
   value = "${aws_spot_instance_request.k8s-master.public_ip}"
 }
 output "worker_ips" {
-  value = "${aws_spot_instance_request.k8s-worker.*.public_ip}"
+  value = ["${aws_spot_instance_request.k8s-worker.*.public_ip}"]
 }
