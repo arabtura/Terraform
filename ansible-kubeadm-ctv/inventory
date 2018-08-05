@@ -1,0 +1,16 @@
+[master]
+master1 ansible_ssh_host=34.205.29.77
+
+[worker]
+18.207.179.38
+34.205.28.191
+
+[master:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_private_key_file=~/.aws/aws_starabur_key_file.pem
+[worker:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_private_key_file=~/.aws/aws_starabur_key_file.pem
+
